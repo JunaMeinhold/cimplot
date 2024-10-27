@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.15)
 
 project(cimplot)
 
@@ -17,7 +17,12 @@ file(GLOB IMGUI_SOURCES
 )
 
 set(IMGUI_STATIC "no" CACHE STRING "Build as a static library")
+set(IMGUI_WCHAR32 "no" CACHE STRING "Build with ImWChar32")
 set(CMAKE_CXX_STANDARD 11)
+
+if (IMGUI_WCHAR32)
+    add_definitions("-DIMGUI_USE_WCHAR32=1")
+endif(IMGUI_WCHAR32)
 
 #add library and link
 if (IMGUI_STATIC)
