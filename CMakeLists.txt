@@ -31,6 +31,7 @@ else (IMGUI_STATIC)
     add_library(cimplot SHARED ${IMGUI_SOURCES})
 endif (IMGUI_STATIC)
 
+add_definitions("-DIMGUI_USER_CONFIG=\"../cimconfig.h\"")
 target_compile_definitions(cimplot PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1)
 
 
