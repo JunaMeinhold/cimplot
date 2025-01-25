@@ -169,7 +169,8 @@ enum ImPlotInfLinesFlags_ {
 enum ImPlotPieChartFlags_ {
     ImPlotPieChartFlags_None = 0,
     ImPlotPieChartFlags_Normalize = 1 << 10,
-    ImPlotPieChartFlags_IgnoreHidden = 1 << 11
+    ImPlotPieChartFlags_IgnoreHidden = 1 << 11,
+    ImPlotPieChartFlags_Exploding = 1 << 12
 };
 enum ImPlotHeatmapFlags_ {
     ImPlotHeatmapFlags_None = 0,
@@ -316,8 +317,8 @@ struct ImPlotPoint {
     constexpr ImPlotPoint() : x(0.0), y(0.0) { }
     constexpr ImPlotPoint(double _x, double _y) : x(_x), y(_y) { }
     constexpr ImPlotPoint(const ImVec2& p) : x((double)p.x), y((double)p.y) { }
-    double& operator[] (size_t idx) {                                                  ((                                                 idx == 0 || idx == 1                                                 ) ? (void)0 : __assert_func ("../implot/implot.h", 473, __func__,                                                  "idx == 0 || idx == 1"                                                 ))                                                                                ; return ((double*)(void*)(char*)this)[idx]; }
-    double operator[] (size_t idx) const {                                                  ((                                                 idx == 0 || idx == 1                                                 ) ? (void)0 : __assert_func ("../implot/implot.h", 474, __func__,                                                  "idx == 0 || idx == 1"                                                 ))                                                                                ; return ((const double*)(const void*)(const char*)this)[idx]; }
+    double& operator[] (size_t idx) {                                                  ((                                                 idx == 0 || idx == 1                                                 ) ? (void)0 : __assert_func ("../implot/implot.h", 475, __func__,                                                  "idx == 0 || idx == 1"                                                 ))                                                                                ; return ((double*)(void*)(char*)this)[idx]; }
+    double operator[] (size_t idx) const {                                                  ((                                                 idx == 0 || idx == 1                                                 ) ? (void)0 : __assert_func ("../implot/implot.h", 476, __func__,                                                  "idx == 0 || idx == 1"                                                 ))                                                                                ; return ((const double*)(const void*)(const char*)this)[idx]; }
 };
 struct ImPlotRange {
     double Min, Max;
@@ -1686,13 +1687,24 @@ static inline int GetDaysInMonth(int year, int month) {
  tm* GetGmtTime(const ImPlotTime& t, tm* ptm);
  ImPlotTime MkLocTime(struct tm *ptm);
  tm* GetLocTime(const ImPlotTime& t, tm* ptm);
+static inline ImPlotTime MkTime(struct tm *ptm) {
+    if (GetStyle().UseLocalTime) return MkLocTime(ptm);
+    else return MkGmtTime(ptm);
+}
+static inline tm* GetTime(const ImPlotTime& t, tm* ptm) {
+    if (GetStyle().UseLocalTime) return GetLocTime(t,ptm);
+    else return GetGmtTime(t,ptm);
+}
  ImPlotTime MakeTime(int year, int month = 0, int day = 1, int hour = 0, int min = 0, int sec = 0, int us = 0);
  int GetYear(const ImPlotTime& t);
+ int GetMonth(const ImPlotTime& t);
  ImPlotTime AddTime(const ImPlotTime& t, ImPlotTimeUnit unit, int count);
  ImPlotTime FloorTime(const ImPlotTime& t, ImPlotTimeUnit unit);
  ImPlotTime CeilTime(const ImPlotTime& t, ImPlotTimeUnit unit);
  ImPlotTime RoundTime(const ImPlotTime& t, ImPlotTimeUnit unit);
  ImPlotTime CombineDateTime(const ImPlotTime& date_part, const ImPlotTime& time_part);
+static inline ImPlotTime Now() { return ImPlotTime::FromDouble((double)time(nullptr)); }
+static inline ImPlotTime Today() { return ImPlot::FloorTime(Now(), ImPlotTimeUnit_Day); }
  int FormatTime(const ImPlotTime& t, char* buffer, int size, ImPlotTimeFmt fmt, bool use_24_hr_clk);
  int FormatDate(const ImPlotTime& t, char* buffer, int size, ImPlotDateFmt fmt, bool use_iso_8601);
  int FormatDateTime(const ImPlotTime& t, char* buffer, int size, ImPlotDateTimeSpec fmt);
