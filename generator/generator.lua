@@ -64,7 +64,10 @@ local implot_version
 while true do
     local line = pipe:read"*l"
     implot_version = line:match([[ImPlot%s+v(.+)]])
-    if implot_version then break end
+    if implot_version then
+        implot_version = implot_version:gsub("%s+$", "")
+        break
+    end
 end
 pipe:close()
 cimgui_header = cimgui_header:gsub("XXX",implot_version)
